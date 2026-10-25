@@ -85,5 +85,40 @@
    "reveal": "static still (all text shown), last line gold",
    "tint": "cold winter blue-grey to near-black bottom"
   }
+ },
+ {
+  "n": 5,
+  "date": "2026-10-25",
+  "type": "reel",
+  "topic": "رها کردن — درختا برگاشونو رها می‌کنن و نمی‌میرن؛ بعضیا رو از سر احترام به خودت رها کن",
+  "title": "رها",
+  "file": "reels/005-raha.mp4",
+  "lines": [
+   "درختا هر پاییز",
+   "برگاشونو رها می‌کنن…",
+   "ولی نمی‌میرن؛",
+   "فقط سبک‌تر می‌شن",
+   "تو هم بعضیا رو رها کن",
+   "نه از سر کینه…",
+   "از سر احترام",
+   "به خودت",
+   "بهار مال کسیه",
+   "که بلد بود رها کنه"
+  ],
+  "permalink": "https://www.instagram.com/reel/De7tjBmDvDQ/",
+  "story": true,
+  "footage_id": 187100,
+  "music": {
+   "seed": 6417,
+   "key": "A",
+   "tempo": 68,
+   "prog": 1
+  },
+  "style": {
+   "font": "Nastaliq 400/700",
+   "layout": "key word «رها» huge gold at top stays; 2-line beats in middle band; centered 2-line end-card (last line gold); watermark bottom-right",
+   "reveal": "word-by-word fade + rise + blur-to-sharp (stagger); key word blur-in with slow float",
+   "tint": "warm burnt amber/brown dark"
+  }
  }
 ]
