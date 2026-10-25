@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Original emotional score for terapi_khone reels: piano + violin + cello + strings.
+"""Original emotional score for terapi_khone reels: piano + violin + cello + strings + choir/voice (aah, ooh).
 
 Uses real instrument samples vendored in samples/ (MusyngKite soundfont, free to use)
 and composes a NEW piece every time from the seed, so nothing is copied and there is
@@ -94,7 +94,8 @@ def compose(dur, seed, key, tempo, prog_i):
     beat = 60 / tempo; bar = 4 * beat
     prog = PROGS[prog_i % len(PROGS)]
     nbars = int(np.ceil(dur / bar)) + 1
-    dry = {k: np.zeros((int((dur + 4) * SR), 2)) for k in ("piano", "violin", "cello", "strings")}
+    dry = {k: np.zeros((int((dur + 4) * SR), 2)) for k in ("piano", "violin", "cello", "strings", "choir", "voice")}
+    use_voice = rng.random() < 0.85
 
     scale = sorted({(tonic + d + 12 * o) for d in MINOR for o in (-1, 0, 1, 2)})
     def nearest_scale(m): return min(scale, key=lambda x: abs(x - m))
@@ -126,6 +127,11 @@ def compose(dur, seed, key, tempo, prog_i):
             pad_gain = 0.16 if section == "intro" else (0.30 if section == "peak" else 0.22)
             for m in tri:
                 place(dry["strings"], held("string_ensemble_1", m, bar + 0.3, release=1.0), t0, pad_gain, 0.3)
+            if use_voice and section != "intro":
+                cg = 0.20 if section == "peak" else 0.13
+                for m in tri:
+                    mm = m + 12 if m + 12 <= 79 else m
+                    place(dry["choir"], held("choir_aahs", mm, bar + 0.3, release=1.2), t0, cg, -0.2)
 
         if b >= 2 and not (last and b == nbars - 1):
             # violin melody: two or three notes per bar, chord tones on strong beats, stepwise between
@@ -142,6 +148,9 @@ def compose(dur, seed, key, tempo, prog_i):
                 d = dlen * beat
                 g = (0.34 if section == "peak" else 0.27) * rng.uniform(0.92, 1.05)
                 place(dry["violin"], held("violin", m, d * 1.02, release=0.7), t + 0.03, g, 0.15)
+                if use_voice and section == "peak":
+                    vm = m - 12 if m - 12 >= 48 else m
+                    place(dry["voice"], held("voice_oohs", min(vm, 79), d * 1.02, release=0.9), t + 0.05, g * 0.8, -0.1)
                 prev_mel = m; t += d
 
     # final chord
@@ -158,7 +167,7 @@ def main():
     a = ap.parse_args()
     dry = compose(a.dur, a.seed, a.key, a.tempo, a.prog)
     ir = reverb_ir(seed=a.seed)
-    sends = {"piano": 0.35, "violin": 0.55, "cello": 0.45, "strings": 0.6}
+    sends = {"piano": 0.35, "violin": 0.55, "cello": 0.45, "strings": 0.6, "choir": 0.7, "voice": 0.6}
     mix = np.zeros_like(dry["piano"])
     wet = np.zeros_like(mix)
     for k, sig in dry.items():
