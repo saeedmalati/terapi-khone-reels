@@ -9,5 +9,24 @@
     "type": "reel",
     "story": true,
     "music": "synth-v1"
+  },
+  {
+    "n": 2,
+    "date": "2026-10-25",
+    "type": "post",
+    "topic": "رفیق — دوستی که نصفه‌شب بی‌سؤال کنارت میاد",
+    "title": "رفیق",
+    "file": "posts/002-rafigh-feed.jpg",
+    "story_file": "posts/002-rafigh-story.jpg",
+    "lines": [
+      "اونی که نصفه‌شب",
+      "بی‌هیچ سؤالی اومد…",
+      "فقط رفیق نیست؛",
+      "یه تیکه از جونته"
+    ],
+    "scene": "night city rain, navy/amber",
+    "permalink": "https://www.instagram.com/p/De6vBLRERTc/",
+    "story": true,
+    "music": null
   }
 ]
