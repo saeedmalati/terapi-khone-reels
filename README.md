@@ -11,7 +11,7 @@ Content for the Instagram page terapi_khone (fully automatic, every 3 hours).
   `python3 music.py out.wav --dur 26 --seed N --key D --tempo 64 --prog 0..5`
 - `tools/fetch_footage.py` — run inside the Composio remote workbench (it can reach Pixabay); commits the clip
   to `footage/<id>-<slug>.mp4.partNN`. Reassemble with `cat footage/<name>.mp4.part* > assets/footage.mp4`.
-  Unused footage already in `footage/`: 286272-sunset-sun-water (sea sunset), 154401-city-night-rain (used only in an unpublished test).
+  Unused footage already in `footage/`: 154401-city-night-rain (used only in an unpublished test).
 - `STYLES.md` — fonts, layouts, reveals and HARD spacing rules. Never repeat the style of the last 3 pieces.
 - `reels/`, `posts/` — published files (their raw.githubusercontent.com URLs are what Instagram fetches).
 - `log.json` — everything published, with type, topic, title, permalink, story, music params and style.

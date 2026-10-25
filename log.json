@@ -1,32 +1,65 @@
 [
-  {
-    "n": 1,
-    "date": "2026-10-25",
-    "topic": "پدر",
-    "title": "بابا",
-    "file": "reels/001-baba.mp4",
-    "permalink": "https://www.instagram.com/reel/De6ni7Pj5oV/",
-    "type": "reel",
-    "story": true,
-    "music": "synth-v1"
+ {
+  "n": 1,
+  "date": "2026-10-25",
+  "topic": "پدر",
+  "title": "بابا",
+  "file": "reels/001-baba.mp4",
+  "permalink": "https://www.instagram.com/reel/De6ni7Pj5oV/",
+  "type": "reel",
+  "story": true,
+  "music": "synth-v1"
+ },
+ {
+  "n": 2,
+  "date": "2026-10-25",
+  "type": "post",
+  "topic": "رفیق — دوستی که نصفه‌شب بی‌سؤال کنارت میاد",
+  "title": "رفیق",
+  "file": "posts/002-rafigh-feed.jpg",
+  "story_file": "posts/002-rafigh-story.jpg",
+  "lines": [
+   "اونی که نصفه‌شب",
+   "بی‌هیچ سؤالی اومد…",
+   "فقط رفیق نیست؛",
+   "یه تیکه از جونته"
+  ],
+  "scene": "night city rain, navy/amber",
+  "permalink": "https://www.instagram.com/p/De6vBLRERTc/",
+  "story": true,
+  "music": null
+ },
+ {
+  "n": 3,
+  "date": "2026-10-25",
+  "type": "reel",
+  "topic": "دلتنگی — جای خالی کسی که دیگه نیست، کنار دریا موقع غروب",
+  "title": "دلتنگی",
+  "file": "reels/003-deltangi.mp4",
+  "lines": [
+   "هر غروب که می‌شه",
+   "دلم یه جوری می‌گیره",
+   "انگار یکی اینجا",
+   "جاش خیلی خالیه…",
+   "دریا که موج می‌زنه",
+   "فکر می‌کنم صدای توئه",
+   "کاش فقط یه بار دیگه",
+   "کنارم بودی…"
+  ],
+  "permalink": "https://www.instagram.com/reel/De7D_mjkn-E/",
+  "story": true,
+  "footage_id": 286272,
+  "music": {
+   "seed": 3031,
+   "key": "E",
+   "tempo": 62,
+   "prog": 3
   },
-  {
-    "n": 2,
-    "date": "2026-10-25",
-    "type": "post",
-    "topic": "رفیق — دوستی که نصفه‌شب بی‌سؤال کنارت میاد",
-    "title": "رفیق",
-    "file": "posts/002-rafigh-feed.jpg",
-    "story_file": "posts/002-rafigh-story.jpg",
-    "lines": [
-      "اونی که نصفه‌شب",
-      "بی‌هیچ سؤالی اومد…",
-      "فقط رفیق نیست؛",
-      "یه تیکه از جونته"
-    ],
-    "scene": "night city rain, navy/amber",
-    "permalink": "https://www.instagram.com/p/De6vBLRERTc/",
-    "story": true,
-    "music": null
+  "style": {
+   "font": "Gulzar",
+   "layout": "5+3 right-aligned accumulating block, small title top-right, centered end-card",
+   "reveal": "blur-to-sharp + slide from right per line; end-card ink-bleed (scale+blur)",
+   "tint": "soft rose dusk"
   }
+ }
 ]
