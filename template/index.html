@@ -1,0 +1,270 @@
+<!doctype html>
+<html
+  lang="fa"
+  data-composition-variables='[
+    {"id":"title","type":"string","label":"تیتر","default":"بابا"},
+    {"id":"l1","type":"string","label":"جمله ۱","default":"هیچ‌وقت نگفت خسته‌ام…"},
+    {"id":"l2a","type":"string","label":"جمله ۲ (خط اول)","default":"ولی دست‌هاش"},
+    {"id":"l2b","type":"string","label":"جمله ۲ (خط دوم)","default":"همه‌چیز رو می‌گفت"},
+    {"id":"l3","type":"string","label":"جمله ۳","default":"یه عمر جای ما غصه خورد"},
+    {"id":"l4","type":"string","label":"جمله ۴","default":"و جلوی ما فقط لبخند زد"},
+    {"id":"l5","type":"string","label":"جمله ۵","default":"اگه هنوز کنارته…"},
+    {"id":"l6a","type":"string","label":"جمله ۶ (خط اول)","default":"امشب محکم بغلش کن"},
+    {"id":"l6b","type":"string","label":"جمله ۶ (خط دوم)","default":"و بهش بگو"},
+    {"id":"l6c","type":"string","label":"جمله ۶ (خط سوم)","default":"چقدر دوستش داری"},
+    {"id":"handle","type":"string","label":"واترمارک","default":"terapi_khone"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Vazirmatn"; font-weight: 300; src: url("assets/fonts/vaz-ar-300.woff2") format("woff2"); unicode-range: U+0600-06FF, U+200C-200F, U+2000-206F, U+FB50-FDFF, U+FE70-FEFF; }
+      @font-face { font-family: "Vazirmatn"; font-weight: 500; src: url("assets/fonts/vaz-ar-500.woff2") format("woff2"); unicode-range: U+0600-06FF, U+200C-200F, U+2000-206F, U+FB50-FDFF, U+FE70-FEFF; }
+      @font-face { font-family: "Vazirmatn"; font-weight: 700; src: url("assets/fonts/vaz-ar-700.woff2") format("woff2"); unicode-range: U+0600-06FF, U+200C-200F, U+2000-206F, U+FB50-FDFF, U+FE70-FEFF; }
+      @font-face { font-family: "Vazirmatn"; font-weight: 900; src: url("assets/fonts/vaz-ar-900.woff2") format("woff2"); unicode-range: U+0600-06FF, U+200C-200F, U+2000-206F, U+FB50-FDFF, U+FE70-FEFF; }
+      @font-face { font-family: "Vazirmatn"; font-weight: 300; src: url("assets/fonts/vaz-la-300.woff2") format("woff2"); unicode-range: U+0000-00FF; }
+      @font-face { font-family: "Vazirmatn"; font-weight: 500; src: url("assets/fonts/vaz-la-500.woff2") format("woff2"); unicode-range: U+0000-00FF; }
+
+      :root {
+        --ink: #fff4e2;
+        --gold: #ffcf8a;
+        --font-display: "Vazirmatn";
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #120d1c; }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: var(--font-display), sans-serif;
+        direction: rtl;
+      }
+
+      /* ---------- landscape ---------- */
+      #bg { position: absolute; inset: 0; z-index: 0; }
+      #bg-scale { position: absolute; inset: -40px; transform-origin: 50% 62%; }
+      #bg svg { width: 100%; height: 100%; display: block; }
+      #dust { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+      .mote {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 222, 170, 0.9) 0%, rgba(255, 200, 140, 0.25) 45%, rgba(255, 190, 120, 0) 70%);
+      }
+      #shade {
+        position: absolute; inset: 0; z-index: 2; pointer-events: none;
+        background:
+          linear-gradient(180deg, rgba(10, 6, 20, 0.55) 0%, rgba(10, 6, 20, 0.15) 22%, rgba(10, 6, 20, 0) 45%, rgba(10, 6, 20, 0) 60%, rgba(10, 6, 20, 0.55) 100%),
+          radial-gradient(ellipse 85% 70% at 50% 55%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.45) 100%);
+      }
+
+      /* ---------- type ---------- */
+      #title-wrap {
+        position: absolute; z-index: 5; left: 0; right: 0; top: 300px;
+        text-align: center;
+      }
+      #title {
+        display: inline-block;
+        font-weight: 900;
+        font-size: 210px;
+        line-height: 1.1;
+        color: var(--ink);
+        text-shadow: 0 0 28px rgba(255, 196, 120, 0.55), 0 6px 30px rgba(0, 0, 0, 0.5);
+      }
+      #rule {
+        position: absolute; z-index: 5; top: 590px; left: 50%;
+        width: 260px; height: 3px; margin-left: -130px;
+        background: linear-gradient(90deg, rgba(255, 207, 138, 0), var(--gold), rgba(255, 207, 138, 0));
+        border-radius: 3px;
+      }
+      .line {
+        position: absolute; z-index: 6; left: 70px; right: 70px; top: 760px;
+        text-align: center;
+        font-weight: 500;
+        font-size: 76px;
+        line-height: 1.55;
+        color: var(--ink);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.55), 0 0 26px rgba(0, 0, 0, 0.45);
+      }
+      .line .ink {
+        display: inline-block;
+        --p: 0%;
+        -webkit-mask-image: linear-gradient(to left, #000 calc(var(--p) - 10%), rgba(0,0,0,0) var(--p));
+        mask-image: linear-gradient(to left, #000 calc(var(--p) - 10%), rgba(0,0,0,0) var(--p));
+      }
+      .line .ink + .ink { margin-top: 6px; }
+      .line.big { font-size: 82px; font-weight: 700; color: #fff7ea; }
+      .stack { display: flex; flex-direction: column; align-items: center; }
+      #handle {
+        position: absolute; z-index: 7; left: 0; right: 0; top: 1250px;
+        text-align: center; direction: ltr;
+        font-family: var(--font-display), sans-serif;
+        font-weight: 300; font-size: 30px; letter-spacing: 0.08em;
+        color: rgba(255, 244, 226, 0.62);
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="24"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!-- landscape -->
+      <div id="bg" class="clip" data-start="0" data-duration="24" data-track-index="0">
+        <div id="bg-scale">
+          <svg viewBox="0 0 1160 2000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#1b1433" />
+                <stop offset="0.28" stop-color="#3b2550" />
+                <stop offset="0.46" stop-color="#7a3a55" />
+                <stop offset="0.56" stop-color="#c8644a" />
+                <stop offset="0.62" stop-color="#f0a058" />
+                <stop offset="0.66" stop-color="#ffd08a" />
+              </linearGradient>
+              <radialGradient id="sunglow" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff2c8" stop-opacity="1" />
+                <stop offset="0.18" stop-color="#ffd48c" stop-opacity="0.9" />
+                <stop offset="0.45" stop-color="#ff9e5a" stop-opacity="0.35" />
+                <stop offset="1" stop-color="#ff7a45" stop-opacity="0" />
+              </radialGradient>
+              <linearGradient id="road" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#6a3a3c" />
+                <stop offset="1" stop-color="#1c1220" />
+              </linearGradient>
+            </defs>
+            <rect width="1160" height="2000" fill="url(#sky)" />
+            <g id="sun-g">
+              <circle cx="580" cy="1290" r="560" fill="url(#sunglow)" />
+              <circle cx="580" cy="1300" r="92" fill="#fff0c4" opacity="0.95" />
+            </g>
+            <!-- thin clouds -->
+            <g id="clouds" opacity="0.55" fill="#f2a27a">
+              <ellipse cx="300" cy="1040" rx="260" ry="9" />
+              <ellipse cx="820" cy="1000" rx="300" ry="7" opacity="0.8" />
+              <ellipse cx="640" cy="1110" rx="200" ry="6" opacity="0.7" />
+              <ellipse cx="180" cy="1160" rx="160" ry="5" opacity="0.6" />
+            </g>
+            <!-- far hills -->
+            <path d="M0 1300 C 120 1250, 240 1270, 360 1285 S 600 1240, 760 1275 S 1020 1255, 1160 1280 L1160 2000 L0 2000 Z" fill="#8a4a58" opacity="0.85" />
+            <path d="M0 1350 C 160 1310, 300 1330, 460 1345 S 760 1305, 920 1335 S 1100 1320, 1160 1330 L1160 2000 L0 2000 Z" fill="#5a2f46" />
+            <!-- near hills -->
+            <path d="M0 1460 C 200 1400, 380 1420, 520 1450 S 840 1390, 1160 1430 L1160 2000 L0 2000 Z" fill="#2e1a30" />
+            <!-- road -->
+            <path d="M560 1452 L600 1452 L900 2000 L260 2000 Z" fill="url(#road)" opacity="0.9" />
+            <path d="M578 1455 L582 1455 L600 2000 L560 2000 Z" fill="#ffd9a0" opacity="0.18" />
+            <!-- lone tree -->
+            <g fill="#1a0f1d">
+              <path d="M884 1430 L892 1300 L898 1300 L904 1430 Z" />
+              <path d="M893 1330 L850 1290 L854 1286 L895 1320 Z" />
+              <path d="M896 1320 L940 1278 L944 1282 L898 1330 Z" />
+              <circle cx="895" cy="1250" r="58" />
+              <circle cx="852" cy="1272" r="40" />
+              <circle cx="940" cy="1268" r="44" />
+              <circle cx="880" cy="1210" r="40" />
+              <circle cx="920" cy="1215" r="36" />
+            </g>
+            <!-- fore ground -->
+            <path d="M0 1600 C 260 1560, 420 1590, 560 1610 S 900 1570, 1160 1590 L1160 2000 L0 2000 Z" fill="#150c18" />
+          </svg>
+        </div>
+      </div>
+
+      <div id="dust" class="clip" data-start="0" data-duration="24" data-track-index="1"></div>
+      <div id="shade" class="clip" data-start="0" data-duration="24" data-track-index="2"></div>
+
+      <!-- title (on screen at frame 0) -->
+      <div id="title-wrap" class="clip" data-start="0" data-duration="24" data-track-index="3">
+        <span id="title" data-var-text="title">بابا</span>
+      </div>
+      <div id="rule" class="clip" data-start="0" data-duration="24" data-track-index="3"></div>
+
+      <!-- lines -->
+      <div id="l1" class="line clip" data-start="0.5" data-duration="3.6" data-track-index="4"><span class="ink" data-var-text="l1">هیچ‌وقت نگفت خسته‌ام…</span></div>
+      <div id="l2" class="line clip" data-start="4.1" data-duration="3.6" data-track-index="4"><div class="stack"><span class="ink" id="l2a" data-var-text="l2a">ولی دست‌هاش</span><span class="ink" id="l2b" data-var-text="l2b">همه‌چیز رو می‌گفت</span></div></div>
+      <div id="l3" class="line clip" data-start="7.7" data-duration="3.6" data-track-index="4"><span class="ink" data-var-text="l3">یه عمر جای ما غصه خورد</span></div>
+      <div id="l4" class="line clip" data-start="11.3" data-duration="3.6" data-track-index="4"><span class="ink" data-var-text="l4">و جلوی ما فقط لبخند زد</span></div>
+      <div id="l5" class="line clip" data-start="14.9" data-duration="3.4" data-track-index="4"><span class="ink" data-var-text="l5">اگه هنوز کنارته…</span></div>
+      <div id="l6" class="line big clip" data-start="18.3" data-duration="5.7" data-track-index="4">
+        <div class="stack">
+          <span class="ink" id="l6a" data-var-text="l6a">امشب محکم بغلش کن</span>
+          <span class="ink" id="l6b" data-var-text="l6b">و بهش بگو</span>
+          <span class="ink" id="l6c" data-var-text="l6c">چقدر دوستش داری</span>
+        </div>
+      </div>
+
+      <div id="handle" class="clip" data-start="0" data-duration="24" data-track-index="5" data-var-text="handle">terapi_khone</div>
+
+      <audio id="music" class="clip" src="assets/music.wav" data-start="0" data-duration="24" data-track-index="6" data-fade-out="1.5"></audio>
+    </div>
+
+    <script>
+      // deterministic dust motes
+      (function () {
+        let s = 1337;
+        const rnd = () => { s |= 0; s = (s + 0x6d2b79f5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+        const dust = document.getElementById("dust");
+        for (let i = 0; i < 46; i++) {
+          const m = document.createElement("div");
+          m.className = "mote";
+          m.id = "mote" + i;
+          const size = 6 + rnd() * 26;
+          m.style.width = m.style.height = size + "px";
+          m.style.left = rnd() * 1080 + "px";
+          m.style.top = 500 + rnd() * 1300 + "px";
+          m.style.opacity = (0.25 + rnd() * 0.55).toFixed(2);
+          m.dataset.dx = ((rnd() - 0.5) * 120).toFixed(1);
+          m.dataset.dy = (-(60 + rnd() * 220)).toFixed(1);
+          dust.appendChild(m);
+        }
+      })();
+
+      const tl = gsap.timeline({ paused: true });
+      const D = 24;
+
+      // slow push-in on the landscape, sun breathes
+      tl.fromTo("#bg-scale", { scale: 1.0 }, { scale: 1.09, duration: D, ease: "none" }, 0);
+      tl.fromTo("#sun-g", { y: 0 }, { y: 26, duration: D, ease: "none" }, 0);
+      tl.fromTo("#clouds", { x: -20 }, { x: 30, duration: D, ease: "none" }, 0);
+      document.querySelectorAll(".mote").forEach((m) => {
+        tl.fromTo(m, { x: 0, y: 0 }, { x: +m.dataset.dx, y: +m.dataset.dy, duration: D, ease: "none" }, 0);
+      });
+
+      // title: already visible at frame 0, gentle settle + glow
+      tl.fromTo("#title", { scale: 1.06, opacity: 0.85 }, { scale: 1, opacity: 1, duration: 1.4, ease: "power2.out" }, 0);
+      tl.fromTo("#rule", { scaleX: 0.15, opacity: 0.4 }, { scaleX: 1, opacity: 1, duration: 1.6, ease: "power3.out" }, 0);
+      tl.to("#title", { opacity: 0.0, y: -20, duration: 0.8, ease: "power2.in" }, 23.1);
+      tl.to("#rule", { opacity: 0, duration: 0.8, ease: "power2.in" }, 23.1);
+
+      // write a line right-to-left, hold, lift away
+      function writeLine(sel, inkSel, start, dur, writeTime) {
+        tl.fromTo(inkSel, { "--p": "0%" }, { "--p": "112%", duration: writeTime, ease: "none" }, start);
+        tl.fromTo(sel, { y: 18 }, { y: 0, duration: writeTime + 0.4, ease: "power2.out" }, start);
+        tl.fromTo(sel, { opacity: 1 }, { opacity: 0, y: -14, duration: 0.45, ease: "power2.in" }, start + dur - 0.5);
+      }
+      writeLine("#l1", "#l1 .ink", 0.5, 3.6, 1.5);
+      writeLine("#l2", "#l2a", 4.1, 3.6, 0.9);
+      tl.fromTo("#l2b", { "--p": "0%" }, { "--p": "112%", duration: 1.1, ease: "none" }, 5.0);
+      writeLine("#l3", "#l3 .ink", 7.7, 3.6, 1.6);
+      writeLine("#l4", "#l4 .ink", 11.3, 3.6, 1.6);
+      writeLine("#l5", "#l5 .ink", 14.9, 3.4, 1.3);
+
+      // final two-line beat
+      tl.fromTo("#l6a", { "--p": "0%" }, { "--p": "112%", duration: 1.4, ease: "none" }, 18.3);
+      tl.fromTo("#l6b", { "--p": "0%" }, { "--p": "112%", duration: 0.9, ease: "none" }, 19.7);
+      tl.fromTo("#l6c", { "--p": "0%" }, { "--p": "112%", duration: 1.2, ease: "none" }, 20.6);
+      tl.fromTo("#l6", { y: 18 }, { y: 0, duration: 2, ease: "power2.out" }, 18.3);
+      tl.fromTo("#l6", { opacity: 1 }, { opacity: 0, duration: 0.8, ease: "power2.in" }, 23.1);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
