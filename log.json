@@ -61,5 +61,29 @@
    "reveal": "blur-to-sharp + slide from right per line; end-card ink-bleed (scale+blur)",
    "tint": "soft rose dusk"
   }
+ },
+ {
+  "n": 4,
+  "date": "2026-10-25",
+  "type": "post",
+  "topic": "مادر — یه عمر دستامو گرم کرد و نپرسیدم دستای خودش سرد نبود",
+  "title": "",
+  "file": "posts/004-madar-feed.jpg",
+  "story_file": "posts/004-madar-story.jpg",
+  "lines": [
+   "یه عمر دستامو گرم کرد…",
+   "ولی هیچ‌وقت نپرسیدم",
+   "دستای خودش سرد نبود؟"
+  ],
+  "permalink": "https://www.instagram.com/p/De7YOC-nVTq/",
+  "story": true,
+  "footage_id": 254007,
+  "music": null,
+  "style": {
+   "font": "Ruqaa 700/400",
+   "layout": "polaroid photo card (tilted -2deg, watermark on card) over blurred frame; no title; 3-line handwritten note centered below",
+   "reveal": "static still (all text shown), last line gold",
+   "tint": "cold winter blue-grey to near-black bottom"
+  }
  }
 ]
