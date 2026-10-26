@@ -145,5 +145,40 @@
    "reveal": "static still (all text shown), soft gold glow behind block",
    "tint": "desaturated sage/olive green dark"
   }
+ },
+ {
+  "n": 7,
+  "date": "2026-10-26",
+  "type": "reel",
+  "topic": "تاب‌آوری — بی‌صدا شکستم ولی هر بار محکم‌تر پا شدم؛ مثل کوه باش، آفتاب همیشه برمی‌گرده",
+  "title": "",
+  "file": "reels/007-mesle-kooh.mp4",
+  "lines": [
+   "یه روزی شکستم…",
+   "بدون هیچ گلایه‌ای",
+   "چند شب تا صبح",
+   "با بغضم کنار اومدم",
+   "ولی هر بار که افتادم",
+   "محکم‌تر از قبل پا شدم",
+   "طوفان اومد که بشکنه…",
+   "ولی بهم یاد داد بمونم",
+   "مثل کوه باش…",
+   "آفتاب همیشه برمی‌گرده"
+  ],
+  "permalink": "https://www.instagram.com/reel/De8WzEalY3f/",
+  "story": true,
+  "footage_id": 153821,
+  "music": {
+   "seed": 8126,
+   "key": "G",
+   "tempo": 71,
+   "prog": 4
+  },
+  "style": {
+   "font": "Ruqaa 700 (gold question) / 400 (cream answer)",
+   "layout": "7 two-voice: question line top in sky (y≈250), answer line lower over mountain (y≈1080); no title; centered 2-line end-card (2nd line gold); watermark bottom-right",
+   "reveal": "typewriter pen mask steps(6/7) with glowing caret right→left; end-card blur+scale ink-bleed",
+   "tint": "cool steel-navy blue"
+  }
  }
 ]
