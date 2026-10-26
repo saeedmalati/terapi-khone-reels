@@ -195,9 +195,9 @@ def render_reel(photo, post_path, details, source, out, work="/tmp/gdkreel"):
     durs = [4.0] + [3.5] * (len(frames) - 1); fd = 0.5; fps = 30
     inputs = []; parts = []
     for i, (f, d_) in enumerate(zip(frames, durs)):
-        inputs += ["-loop", "1", "-t", str(d_ + fd), "-i", f]
+        inputs += ["-i", f]  # single frame; zoompan emits n frames from it
         n = int((d_ + fd) * fps)
-        parts.append("[%d:v]scale=2160:3840,zoompan=z='min(1+0.0009*on,1.06)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=%d:s=1080x1920:fps=%d,setsar=1,format=yuv420p[v%d]" % (i, n, fps, i))
+        parts.append("[%d:v]scale=1620:2880,zoompan=z='min(1+0.0009*on,1.06)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=%d:s=1080x1920:fps=%d,setsar=1,format=yuv420p[v%d]" % (i, n, fps, i))
     chain = "v0"; t = durs[0]
     for i in range(1, len(frames)):
         parts.append("[%s][v%d]xfade=transition=fade:duration=%s:offset=%s[x%d]" % (chain, i, fd, t, i))
