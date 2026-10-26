@@ -203,7 +203,16 @@ def render_reel(photo, post_path, details, source, out, work="/tmp/gdkreel"):
         parts.append("[%s][v%d]xfade=transition=fade:duration=%s:offset=%s[x%d]" % (chain, i, fd, t, i))
         chain = "x%d" % i; t += durs[i]
     total = sum(durs) + fd
-    cmd = ["ffmpeg", "-y"] + inputs + ["-f", "lavfi", "-t", str(total), "-i", "anullsrc=r=48000:cl=stereo",
+    import shutil
+    ff = shutil.which("ffmpeg")
+    if not ff:
+        try:
+            import imageio_ffmpeg
+        except ImportError:
+            subprocess.run(["pip", "install", "-q", "imageio-ffmpeg"], check=True)
+            import imageio_ffmpeg
+        ff = imageio_ffmpeg.get_ffmpeg_exe()
+    cmd = [ff, "-y"] + inputs + ["-f", "lavfi", "-t", str(total), "-i", "anullsrc=r=48000:cl=stereo",
            "-filter_complex", ";".join(parts), "-map", "[%s]" % chain, "-map", "%d:a" % len(frames),
            "-c:v", "libx264", "-preset", "veryfast", "-crf", "21", "-pix_fmt", "yuv420p", "-r", str(fps),
            "-c:a", "aac", "-b:a", "128k", "-shortest", "-movflags", "+faststart", out]
