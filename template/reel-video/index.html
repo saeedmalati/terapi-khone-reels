@@ -57,7 +57,11 @@
       .line.big { font-weight: 700; font-size: 88px; }
       .stack { display: flex; flex-direction: column; align-items: center; gap: 0.62em; }
       .ink {
-        display: inline-block; --p: 0%; padding: 0 14px;
+        /* The mask only covers the element's box, and Nastaliq/Gulzar/Ruqaa dots and tails reach far outside
+           the line box. This padding (cancelled by the negative margin, so layout is unchanged) makes the mask
+           area big enough that no dot or tail is ever cut. Never remove or shrink it; never use overflow:hidden
+           or clip-path on text. */
+        display: inline-block; --p: 0%; padding: 0.7em 0.45em; margin: -0.7em -0.45em;
         -webkit-mask-image: linear-gradient(to left, #000 calc(var(--p) - 10%), rgba(0,0,0,0) var(--p));
         mask-image: linear-gradient(to left, #000 calc(var(--p) - 10%), rgba(0,0,0,0) var(--p));
       }

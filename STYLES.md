@@ -34,6 +34,14 @@ font OR layout, AND in reveal AND in footage. Invent new variations too; this li
 - After building, zoom-snapshot every multi-line block (`snapshot --zoom "#id" --zoom-scale 1`) and check that
   no dot, descender or ascender touches or overlaps another line. Fix before rendering.
 - Max ~20 characters per visual line; split, never shrink below 70px.
+- NO CUT DOTS (hard, after reel 009 lost the dot of «خ» and the dots under «بیشتر»): a mask only paints inside
+  the element's box, and calligraphic dots/tails reach far outside it. Every masked or animated text element
+  keeps `padding: 0.7em 0.45em; margin: -0.7em -0.45em;` (see `.ink` in template/reel-video/index.html).
+  Never put overflow:hidden, clip-path or a mask on a text container without that padding.
+- Before rendering, verify: for each line, snapshot a frame where it is fully written, then the same frame with
+  `.ink{mask-image:none!important;-webkit-mask-image:none!important}` injected; the text must be pixel-identical.
+  Also check that every line's glyphs stay inside the 1080px frame with ≥40px margin. `tools/mask_test.py` is the
+  regression test for the mask padding (must print 0 for "new").
 
 ## Footage treatment
 - Dark gradient overlay so text reads (top and middle darker); vary its color tint per piece
