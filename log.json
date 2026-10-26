@@ -180,5 +180,30 @@
    "reveal": "typewriter pen mask steps(6/7) with glowing caret right→left; end-card blur+scale ink-bleed",
    "tint": "cool steel-navy blue"
   }
+ },
+ {
+  "n": 8,
+  "date": "2026-10-26",
+  "type": "post",
+  "topic": "شکرگزاری — قبل از اینکه آفتاب بره، شکر که هنوز زنده‌م و یکی دوسم داره",
+  "title": "شکر",
+  "file": "posts/008-shokr-feed.jpg",
+  "story_file": "posts/008-shokr-story.jpg",
+  "lines": [
+   "قبل از اینکه آفتاب بره…",
+   "یه نفس عمیق بکش و بگو",
+   "شکر، که هنوز زنده‌م",
+   "و هنوز یکی دوسم داره"
+  ],
+  "permalink": "https://www.instagram.com/p/De8q7gkFS4A/",
+  "story": true,
+  "footage_id": 307864,
+  "music": null,
+  "style": {
+   "font": "Nastaliq 700 title / 400 lines (last line 700 gold)",
+   "layout": "4 lower block: sun + wind turbines above, small gold title «شکر» with thin gold rule, 4-line centered block over dark field gradient; watermark bottom-right",
+   "reveal": "static still (all text shown), warm glow on title",
+   "tint": "warm peach-coral sunset fading to deep green-black"
+  }
  }
 ]
