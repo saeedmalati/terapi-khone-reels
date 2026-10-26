@@ -205,5 +205,42 @@
    "reveal": "static still (all text shown), warm glow on title",
    "tint": "warm peach-coral sunset fading to deep green-black"
   }
+ },
+ {
+  "n": 9,
+  "date": "2026-10-26",
+  "type": "reel",
+  "topic": "عزت نفس — بی‌صدا رفتن از جایی که دیده نمی‌شدی؛ رفتم چون خودمو بیشتر دوست داشتم",
+  "title": "",
+  "file": "reels/009-ezzat-nafs.mp4",
+  "lines": [
+   "یاد گرفتم",
+   "بی‌صدا برم…",
+   "از جایی که",
+   "دیده نمی‌شدم",
+   "هرچی بیشتر موندم",
+   "کمتر شدم…",
+   "دوست داشتن",
+   "التماس کردن نیست",
+   "رفتم، نه چون",
+   "دوستش نداشتم…",
+   "چون خودمو",
+   "بیشتر دوست داشتم"
+  ],
+  "permalink": "https://www.instagram.com/reel/De9ATlAF96w/",
+  "story": true,
+  "footage_id": 154401,
+  "music": {
+   "seed": 4729,
+   "key": "D",
+   "tempo": 64,
+   "prog": 5
+  },
+  "style": {
+   "font": "Nastaliq 400 (end line 700 gold)",
+   "layout": "zigzag 'footsteps': each 2-line beat split right/left at a different height (y 260–900), no title; centered 2-line end-card; watermark bottom-right",
+   "reveal": "gold glint sweep: soft RTL pen mask with a travelling gold highlight at the edge, beat drifts in 20px sideways",
+   "tint": "plum/violet night"
+  }
  }
 ]
