@@ -274,5 +274,39 @@
    "reveal": "blur-to-sharp + rise per line (no mask); final line blur+scale ink-bleed; block blurs out",
    "tint": "desaturated charcoal with dusty rose"
   }
+ },
+ {
+  "n": 11,
+  "date": "2026-10-26",
+  "type": "reel",
+  "topic": "شادی/درست زندگی کردن — خوشبختی یه جای دور نیست، همین امروزه که هنوز می‌تونم بخندم؛ نذار فردا جای امروزتو بگیره",
+  "title": "امروز",
+  "lines": [
+   "خوشبختی رو همیشه",
+   "یه جای دور می‌دیدم…",
+   "فکر می‌کردم",
+   "باید یه روزی برسه",
+   "ولی امروز فهمیدم…",
+   "خوشبختی یعنی همین",
+   "که هنوز می‌تونم بخندم",
+   "نذار فردا",
+   "جای امروزتو بگیره"
+  ],
+  "file": "reels/011-emrooz.mp4",
+  "permalink": "https://www.instagram.com/reel/De9pirQCvrS/",
+  "story": true,
+  "footage_id": 240659,
+  "duration": 20,
+  "music": {
+   "file": "music/ba-kalam/K 04.mp3",
+   "start": 1.6,
+   "dur": 20
+  },
+  "style": {
+   "font": "Ruqaa 700 key word (gold) / 400 lines / 700 end-card",
+   "layout": "6 key word «امروز» huge in the sky at top (y≈175) with gold rule, stays until 16 s; 2-line beats in the lower band (y≈1030) over a soft dark radial backing; centered 2-line end-card (2nd line gold); watermark bottom-left",
+   "reveal": "word-by-word fade + rise + blur (no mask); key word ink-bleed (blur, scale, letter-spacing settle) with a glow pulse when spoken",
+   "tint": "warm honey-amber sepia (golden wheat field)"
+  }
  }
 ]
