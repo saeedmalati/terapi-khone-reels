@@ -340,5 +340,40 @@
    "reveal": "line slides in from the right (x 70→0) while a wide soft RTL pen mask writes it; beats exit sliding left with fade",
    "tint": "faded indigo dusk (desaturated, cool shadows) with warm low sun"
   }
+ },
+ {
+  "n": 13,
+  "date": "2026-10-26",
+  "type": "reel",
+  "topic": "خواهر — خواهر بی‌حرف از چشمات می‌فهمه چیزی شده؛ دعواها پنج دقیقه‌ست ولی پشتت وایسادنش یه عمر؛ قدرشو بدون",
+  "title": "",
+  "lines": [
+   "خواهر یعنی…",
+   "همونی که بی‌حرف",
+   "از چشمام می‌فهمه",
+   "یه چیزی شده",
+   "دعوامون همیشه",
+   "پنج دقیقه بود…",
+   "ولی پشتم وایسادنش",
+   "یه عمره تموم نشده",
+   "قدرشو بدون…",
+   "خواهر، نصف دلته"
+  ],
+  "file": "reels/013-khahar.mp4",
+  "permalink": "https://www.instagram.com/reel/De-SvoXiWtq/",
+  "story": true,
+  "footage_id": 178717,
+  "duration": 20,
+  "music": {
+   "file": "music/ba-kalam/K 10.mp3",
+   "start": 0.4,
+   "dur": 20
+  },
+  "style": {
+   "font": "Gulzar 400 (end line gold, larger)",
+   "layout": "3 lines accumulate: two 4-line centered blocks (top y≈400) that drift up + blur out; centered 2-line end-card (2nd line gold); no title; watermark top-right",
+   "reveal": "bottom-up rising soft mask + 34px rise + blur-to-sharp per line; end-card ink-bleed (blur, scale 1.05→1)",
+   "tint": "deep emerald-teal over golden backlit pine forest"
+  }
  }
 ]
