@@ -120,5 +120,30 @@
    "reveal": "word-by-word fade + rise + blur-to-sharp (stagger); key word blur-in with slow float",
    "tint": "warm burnt amber/brown dark"
   }
+ },
+ {
+  "n": 6,
+  "date": "2026-10-26",
+  "type": "post",
+  "topic": "تنهایی/خلوت — تنهایی همیشه غم نیست؛ یه فنجون چای و دل آروم یعنی برگشتن پیش خودت",
+  "title": "",
+  "file": "posts/006-khalvat-feed.jpg",
+  "story_file": "posts/006-khalvat-story.jpg",
+  "lines": [
+   "تنهایی همیشه غم نیست…",
+   "گاهی یه فنجون چای",
+   "و یه دل آروم",
+   "یعنی برگشتم پیش خودم"
+  ],
+  "permalink": "https://www.instagram.com/p/De8BdYWiWl8/",
+  "story": true,
+  "footage_id": 86867,
+  "music": null,
+  "style": {
+   "font": "Gulzar 400",
+   "layout": "no title; centered 4-line block in upper third over dark top gradient, thin gold rule before last line (gold), subject (woman with tea) visible below; watermark bottom-right",
+   "reveal": "static still (all text shown), soft gold glow behind block",
+   "tint": "desaturated sage/olive green dark"
+  }
  }
 ]
