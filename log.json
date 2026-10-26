@@ -242,5 +242,37 @@
    "reveal": "gold glint sweep: soft RTL pen mask with a travelling gold highlight at the edge, beat drifts in 20px sideways",
    "tint": "plum/violet night"
   }
+ },
+ {
+  "n": 10,
+  "date": "2026-10-26",
+  "type": "post",
+  "topic": "زخم/دل‌شکستگی — زخم از غریبه نبود، از کسی بود که پشتم بهش گرم بود؛ دلم هنوز مهربونه ولی هر کسی رو راه نمی‌ده",
+  "title": "",
+  "lines": [
+   "زخمم از غریبه نبود…",
+   "از همونی بود که",
+   "پشتم بهش گرم بود",
+   "دلم هنوز مهربونه…",
+   "فقط دیگه هر کسی رو",
+   "راه نمی‌ده"
+  ],
+  "file": "posts/010-zakhm-feed.mp4",
+  "story_file": "posts/010-zakhm-story.mp4",
+  "permalink": "https://www.instagram.com/reel/De9WtMpicJW/",
+  "story": true,
+  "footage_id": 149591,
+  "duration": 21,
+  "music": {
+   "file": "music/ba-kalam/K 12.mp3",
+   "start": 130.6,
+   "dur": 21
+  },
+  "style": {
+   "font": "Gulzar 400 (last line larger, rose)",
+   "layout": "5 right-aligned notes block top-right with thin rose vertical margin rule; 3 lines accumulate per beat, two beats; no title; watermark bottom-left",
+   "reveal": "blur-to-sharp + rise per line (no mask); final line blur+scale ink-bleed; block blurs out",
+   "tint": "desaturated charcoal with dusty rose"
+  }
  }
 ]
