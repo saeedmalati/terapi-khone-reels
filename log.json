@@ -308,5 +308,37 @@
    "reveal": "word-by-word fade + rise + blur (no mask); key word ink-bleed (blur, scale, letter-spacing settle) with a glow pulse when spoken",
    "tint": "warm honey-amber sepia (golden wheat field)"
   }
+ },
+ {
+  "n": 12,
+  "date": "2026-10-26",
+  "type": "post",
+  "topic": "مادربزرگ/پدربزرگ — بوی چای خونه‌ی مادربزرگ هنوز تو دلمه؛ کاش یه بار دیگه دستاشو می‌بوسیدم؛ اگه هنوز هست امروز برو پیشش",
+  "title": "",
+  "lines": [
+   "هنوز بوی چای",
+   "خونه‌ی مادربزرگ میاد…",
+   "کاش یه بار دیگه",
+   "دستاشو می‌بوسیدم",
+   "اگه هنوز هست…",
+   "امروز برو پیشش"
+  ],
+  "file": "posts/012-madarbozorg-feed.mp4",
+  "story_file": "posts/012-madarbozorg-story.mp4",
+  "permalink": "https://www.instagram.com/reel/De9-BPoE07R/",
+  "story": true,
+  "footage_id": 126920,
+  "duration": 18,
+  "music": {
+   "file": "music/ba-kalam/K 06.mp3",
+   "start": 9.1,
+   "dur": 18
+  },
+  "style": {
+   "font": "Nastaliq 400 (end line 700 gold, larger)",
+   "layout": "no title; 2-line beats in a lower band (feed y≈875, story y≈1170) under an open sunset window, replacing each other; centered 2-line end-card (2nd line gold, slow breathe); watermark top-left",
+   "reveal": "line slides in from the right (x 70→0) while a wide soft RTL pen mask writes it; beats exit sliding left with fade",
+   "tint": "faded indigo dusk (desaturated, cool shadows) with warm low sun"
+  }
  }
 ]
