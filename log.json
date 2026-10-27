@@ -440,5 +440,34 @@
    "reveal": "typewriter-feel RTL pen mask in steps(7) with a thin glowing lilac caret travelling right→left; beats exit rising + blur",
    "tint": "violet-mauve dusk (deep plum top gradient) over pink-cloud sunset forest"
   }
+ },
+ {
+  "n": 16,
+  "date": "2026-10-27",
+  "type": "post",
+  "topic": "عشق — عشق یعنی بدترین حالمو ببینی و باز بمونی؛ بی‌حرف دستمو بگیری و دنیام آروم بشه؛ با تو حتی سکوتم قشنگ‌تره",
+  "title": "عشق",
+  "lines": [
+   "عشق یعنی بدترین حالمو / ببینی و باز بمونی",
+   "بی‌حرف دستمو بگیری / و دنیام آروم بشه",
+   "با تو حتی سکوتم / قشنگ‌تره"
+  ],
+  "file": "posts/016-eshgh-feed.mp4",
+  "story_file": "posts/016-eshgh-story.mp4",
+  "permalink": "https://www.instagram.com/reel/De_Qy0IkUDm/",
+  "story": true,
+  "footage_id": 197529,
+  "duration": 20,
+  "music": {
+   "file": "music/ba-kalam/K 04.mp3",
+   "start": 1.6,
+   "dur": 20
+  },
+  "style": {
+   "font": "Gulzar 400 lines / Ruqaa 700 title (peach); end-card 2nd line peach",
+   "layout": "1 title «عشق» on top with peach rule, one 2-line sentence at a time beneath it in the sky band (feed y≈392, story y≈530), centered larger 2-line end-card; watermark top-left",
+   "reveal": "whole-block horizontal light sweep: wide soft RTL mask with a glowing peach light band riding the edge (screen blend); beats exit up + blur",
+   "tint": "wine-burgundy shadows with peach-gold sunset (soft-light), couple under a palm at sunset"
+  }
  }
 ]
