@@ -375,5 +375,37 @@
    "reveal": "bottom-up rising soft mask + 34px rise + blur-to-sharp per line; end-card ink-bleed (blur, scale 1.05→1)",
    "tint": "deep emerald-teal over golden backlit pine forest"
   }
+ },
+ {
+  "n": 14,
+  "date": "2026-10-27",
+  "type": "post",
+  "topic": "انتخاب‌های اشتباه — سر دوراهی به دلم گوش ندادم؛ راه اشتباه بزرگم کرد؛ اشتباه آخر راه نیست، برگشتن هم یه راهه",
+  "title": "",
+  "lines": [
+   "سر اون دوراهی،",
+   "حرف دلمو گوش ندادم…",
+   "راه اشتباهو رفتم؛",
+   "ولی همون راه بزرگم کرد",
+   "اشتباه، آخر راه نیست…",
+   "برگشتن هم یه راهه"
+  ],
+  "file": "posts/014-dorahi-feed.mp4",
+  "story_file": "posts/014-dorahi-story.mp4",
+  "permalink": "https://www.instagram.com/reel/De-nBmYlNmZ/",
+  "story": true,
+  "footage_id": 210762,
+  "duration": 18,
+  "music": {
+   "file": "music/ba-kalam/K 09.mp3",
+   "start": 10.2,
+   "dur": 18
+  },
+  "style": {
+   "font": "Ruqaa 400 lines / 700 end-card (2nd line copper)",
+   "layout": "diagonal 'road' path: beat 1 right-aligned top-right, beat 2 left-aligned lower-left, centered 2-line end-card; thin copper rule travels along the roads between beats; no title; watermark bottom-right",
+   "reveal": "ink-bleed per line (blur 14px→0, scale 1.07→1, diagonal drift, copper glow cooling to shadow); beats exit drifting + blur",
+   "tint": "cool moonlit grey-blue (desaturated) with copper accent, top-down crossroads"
+  }
  }
 ]
