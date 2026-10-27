@@ -469,5 +469,40 @@
    "reveal": "whole-block horizontal light sweep: wide soft RTL mask with a glowing peach light band riding the edge (screen blend); beats exit up + blur",
    "tint": "wine-burgundy shadows with peach-gold sunset (soft-light), couple under a palm at sunset"
   }
+ },
+ {
+  "n": 17,
+  "date": "2026-10-27",
+  "type": "reel",
+  "topic": "موفقیت — وقتی گفتم می‌خوام برسم همه خندیدن؛ شبا بی‌صدا جنگیدم؛ امروز همونا می‌پرسن چطوری رسیدی؛ موفقیت یعنی خودتو باور کنی وقتی هیچ‌کس باورت نکرد",
+  "title": "",
+  "lines": [
+   "وقتی گفتم می‌خوام برسم،",
+   "همه بهم خندیدن…",
+   "شبا بی‌صدا جنگیدم،",
+   "وقتی همه خواب بودن",
+   "امروز همونا می‌پرسن:",
+   "«چطوری رسیدی؟»",
+   "موفقیت یعنی…",
+   "خودتو باور کنی",
+   "وقتی هیچ‌کس باورت نکرد"
+  ],
+  "file": "reels/017-movafaghiat.mp4",
+  "permalink": "https://www.instagram.com/reel/De_mv1cCAkF/",
+  "story": true,
+  "footage_id": 241923,
+  "duration": 20,
+  "music": {
+   "file": "music/ba-kalam/K 10.mp3",
+   "start": 0.4,
+   "dur": 20
+  },
+  "style": {
+   "font": "Nastaliq 400 notes / 700 gold quote line / 700 end-card (3rd line gold, glow pulse)",
+   "layout": "5 right-aligned handwritten-notes block (right padding 90px) in the sky band (top y≈230): 4 lines accumulate, then a 2-line page; centered 3-line end-card; no title; watermark top-right",
+   "reveal": "word-by-word drop-in from above (y -26→0) with blur 10px→0 and fade; pages exit up + blur",
+   "tint": "deep navy-ink sky gradient to rose-gold dawn over a sunrise mountain"
+  },
+  "story_file": "reels/017-movafaghiat.mp4"
  }
 ]
