@@ -406,7 +406,7 @@ def _globe_over(base, cx, cy, r, theta, tilt=0.14):
     return base
 
 
-def _globe_path(t, RH):
+def _globe_path(t, RH, flip=False):
     import math
     def ease(u):
         u = max(0.0, min(1.0, u)); return u * u * (3 - 2 * u)
@@ -420,6 +420,8 @@ def _globe_path(t, RH):
         cx = W / 2 + (W / 2 + 300) * u; cy = RH / 2 - (RH / 2 + 300) * u
         r = full - (full - 120) * u ** 0.7
     theta = (t - 0.5) * math.pi * 1.7
+    if flip:                       # mirrored: flies in from the bottom-right, out to the top-left, spins the other way
+        cx = W - cx; theta = -theta
     return cx, cy, r, theta
 
 
@@ -679,10 +681,11 @@ def render_reel(scenes, source, out, breaking=False, hold=4.5, cps=15, sting=1.6
         if i == 0:
             k_from = ns
         else:
-            whooshes.append(((fno - half) / fps, -0.6, 0.7)); k_from = half
+            fl = (i - 1) % 2 == 1
+            whooshes.append(((fno - half) / fps, 0.6 if fl else -0.6, -0.7 if fl else 0.7)); k_from = half
         for k in range(k_from, ns):
             im = o.frame(fno / fps - t_scene0, 0)
-            cx, cy, r, th = _globe_path(k / (ns - 1), RH)
+            cx, cy, r, th = _globe_path(k / (ns - 1), RH, flip=(i - 1) % 2 == 1)
             emit(_globe_over(im, cx, cy, r, th))
         for _ in range(int(0.25 * fps)):
             emit(o.frame(fno / fps - t_scene0, 0))
@@ -700,7 +703,7 @@ def render_reel(scenes, source, out, breaking=False, hold=4.5, cps=15, sting=1.6
         if i + 1 < len(scenes):
             for k in range(0, half):
                 im = o.frame(fno / fps - t_scene0, o.total)
-                cx, cy, r, th = _globe_path(k / (ns - 1), RH)
+                cx, cy, r, th = _globe_path(k / (ns - 1), RH, flip=i % 2 == 1)
                 emit(_globe_over(im, cx, cy, r, th))
         del o; gc.collect()
         print("scene", i, "frames", fno, flush=True)
