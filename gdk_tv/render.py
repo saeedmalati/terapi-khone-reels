@@ -87,6 +87,11 @@ def pill(d, right, top, label, f, padx, h, dot=False):
     return h
 
 
+def pill_width(d, label, f, padx, dot=False):
+    bb = d.textbbox((0, 0), label, font=f, anchor="ls", direction="rtl", language="fa")
+    return (bb[2] - bb[0]) + 2 * padx + ((2 * f.size * 0.16 + f.size * 0.28) if dot else 0)
+
+
 def logo(d, cx, cy, r):
     d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=BLACK)
     d.ellipse([cx - r + 4 * S, cy - r + 4 * S, cx + r - 4 * S, cy + r - 4 * S], outline=RED, width=4 * S)
@@ -95,6 +100,25 @@ def logo(d, cx, cy, r):
     tw = tf.getlength("TV")
     d.rounded_rectangle([cx - tw / 2 - r * 0.15, cy + r * 0.2, cx + tw / 2 + r * 0.15, cy + r * 0.62], radius=r * 0.08, fill=RED)
     d.text((cx, cy + r * 0.53), "TV", font=tf, fill=WHITE, anchor="ms")
+
+
+def brand_pill(d, left, top, h):
+    """Rectangular GDK_TV badge with softly rounded corners (same family as the «فوری» pill) — used on reel scenes.
+    Black body, thin red outline, white «GDK» + red «TV» tag. Returns its width."""
+    af = ImageFont.truetype(ARC, int(h * 0.50)); tf = ImageFont.truetype(ARC, int(h * 0.34))
+    gw = af.getlength("GDK"); tw_ = tf.getlength("TV")
+    padx = h * 0.34; tagw = tw_ + h * 0.30; gap = h * 0.16
+    w = padx + gw + gap + tagw + padx * 0.8
+    rad = h * 0.22
+    d.rounded_rectangle([left, top, left + w, top + h], radius=rad, fill=BLACK, outline=RED, width=max(2, int(h * 0.05)))
+    cy = top + h / 2
+    gb = d.textbbox((0, 0), "GDK", font=af, anchor="ls")
+    d.text((left + padx, cy - (gb[1] + gb[3]) / 2), "GDK", font=af, fill=WHITE, anchor="ls")
+    tx0 = left + padx + gw + gap; th_ = h * 0.50
+    d.rounded_rectangle([tx0, cy - th_ / 2, tx0 + tagw, cy + th_ / 2], radius=h * 0.12, fill=RED)
+    tb = d.textbbox((0, 0), "TV", font=tf, anchor="ls")
+    d.text((tx0 + tagw / 2, cy - (tb[1] + tb[3]) / 2), "TV", font=tf, fill=WHITE, anchor="ms")
+    return w
 
 
 def brand_strip(d, R, source):
@@ -420,12 +444,8 @@ class _Scene:
         self.ops = _reel_ops(sc.get("kicker"), sc["runs"], sc.get("sub"), sc.get("style", "A"), RH)
         T = _REEL_TOP
         # forbidden zones in photo coordinates, covering every pan offset (faces never under text/logo/pill)
-        if horiz:
-            forbid = [(0, T - 40, pw, ph), (30, 120, 214 + pan_px, 304)]
-            if breaking: forbid.append((800, 150, W - 30 + pan_px, 280))
-        else:
-            forbid = [(0, T - 40, pw, ph), (30, 120, 214, 304 + pan_px)]
-            if breaking: forbid.append((800, 150, W - 30, 280 + pan_px))
+        # faces stay clear of the text block and of Instagram's page-name area at the top (left or right by phone language)
+        forbid = [(0, T - 40, pw, ph), (0, 0, pw * 0.5, 230), (pw * 0.5, 0, pw, 230)]
         self.photo = safe_cover(sc["photo"], pw, ph, sc.get("focus_y", 0.3), forbid, pad=20)
         ov = Image.new("RGBA", (W * S, RH * S), (0, 0, 0, 0))
         g = Image.new("L", (1, RH * S))
@@ -436,10 +456,13 @@ class _Scene:
             g.putpixel((0, y), v)
         ov.putalpha(g.resize((W * S, RH * S)))
         d = ImageDraw.Draw(ov)
-        M = 60 * S; R = W * S - M; top = 150 * S
-        logo(d, M + 62 * S, top + 62 * S, 62 * S)
-        if breaking:
-            pill(d, R, top + 26 * S, "فوری", F("Black", 38), 26 * S, 76 * S, dot=True)
+        M = 60 * S; R = W * S - M
+        # user rule 2026-10-28: nothing in the top ~250 px (Instagram puts the page name there, left or right by
+        # phone language). The GDK_TV badge sits at the left of the kicker row, «فوری» above the kicker on the right.
+        bw = brand_pill(d, M, (T - 6) * S, 74 * S)
+        if breaking:                                  # «فوری» right after the badge, same row
+            pf = F("Black", 36)
+            pill(d, M + bw + 14 * S + pill_width(d, "فوری", pf, 22 * S, True), (T - 6) * S, "فوری", pf, 22 * S, 74 * S, dot=True)
         global H
         old = H; H = RH
         try:
@@ -855,10 +878,10 @@ class _ChartScene:
         self.bg = bg.convert("RGBA")
         ov = Image.new("RGBA", (W * S, RH * S), (0, 0, 0, 0))
         d = ImageDraw.Draw(ov)
-        M = 60 * S; R = W * S - M; top = 150 * S
-        logo(d, M + 62 * S, top + 62 * S, 62 * S)
+        M = 60 * S; R = W * S - M; top = 250 * S
+        brand_pill(d, M, top, 74 * S)
         if breaking:
-            pill(d, R, top + 26 * S, "فوری", F("Black", 38), 26 * S, 76 * S, dot=True)
+            pill(d, R, top, "فوری", F("Black", 38), 26 * S, 76 * S, dot=True)
         global H
         old = H; H = RH
         try:
@@ -867,7 +890,7 @@ class _ChartScene:
             H = old
         self.overlay = _rgba_down(ov, (W, RH))
         self.ops = _reel_ops(sc.get("kicker"), sc["runs"], sc.get("sub"), sc.get("style", "A"), RH)
-        self.shift = int((330 - _REEL_TOP) * S)
+        self.shift = int((364 - _REEL_TOP) * S)
         self.total = sum(len(o[3]) for o in self.ops if o[0] == "w")
         self._layers = {}
         self.items = [(lab, val, _CHART_COL.get(col, col) if isinstance(col, str) else col) for lab, val, col in self.c["items"]]
