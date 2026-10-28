@@ -291,9 +291,7 @@ def render(photo, out, kicker, runs, source, breaking=False, style="A", focus_y=
     _sl = wrap([(sub, "n")], _mw, _s, _s) if sub else []
     _sh = sum(38 * S + 14 * S for _ in _sl) + (30 * S if sub else 0)
     _top = (H * S - 130 * S - _hh - _kh - 34 * S - _sh) / S
-    forbid = [(0, _top - 40, W, H), (30, 34, 202, 206)]
-    if breaking:
-        forbid.append((800, 70, W - 30, 170))
+    forbid = [(0, _top - 40, W, H)]   # badge and «فوری» now sit in the kicker row, inside the text block
     im = safe_cover(photo, W * S, H * S, focus_y, [tuple(v * S for v in z) for z in forbid], pad=20 * S).convert("RGBA")
     g = Image.new("L", (1, H * S))
     for y in range(H * S):
@@ -304,9 +302,6 @@ def render(photo, out, kicker, runs, source, breaking=False, style="A", focus_y=
     im = Image.composite(Image.new("RGBA", im.size, (0, 0, 0, 255)), im, g.resize((W * S, H * S)))
     d = ImageDraw.Draw(im)
     M = 60 * S; R = W * S - M
-    logo(d, M + 56 * S, M + 60 * S, 56 * S)
-    if breaking:
-        pill(d, R, M + 24 * S, "فوری", F("Black", 36), 26 * S, 72 * S, dot=True)
     base = F("Bold", 64); emph = F("Black", 80); kf = F("Medium", 40); subf = F("Medium", 38)
     maxw = (W - 120 - (30 if style == "B" else 0)) * S
     lines = wrap(runs, maxw, base, emph)
@@ -335,6 +330,13 @@ def render(photo, out, kicker, runs, source, breaking=False, style="A", focus_y=
             d.rectangle([right - 160 * S, y, right, y + 5 * S], fill=RED)
         y += 10 * S
         draw_lines(d, subl, right, y, subf, 14)
+    # user decision 2026-10-28: posts use the same brand look as reels — rectangular GDK_TV badge at the left of
+    # the kicker row (no round logo in the corner), «فوری» right after it in the same row
+    bh = 64 * S; by = top + (kf.size * 1.6 - bh) / 2 if (kicker and style == "C") else top + kf.size * 1.1 - bh * 0.78
+    bw = brand_pill(d, M, by, bh)
+    if breaking:
+        pf = F("Black", 32)
+        pill(d, M + bw + 12 * S + pill_width(d, "فوری", pf, 20 * S, True), by, "فوری", pf, 20 * S, bh, dot=True)
     brand_strip(d, R, source)
     im.convert("RGB").resize((W, H), Image.LANCZOS).save(out, quality=93)
     return out
