@@ -1,4 +1,5 @@
 """gdk_tv news renderer: 1080x1350 post, 1080x1920 story and 1080x1920 reel.
+Faces are framed clear of text/logo automatically; reels may include one chart scene (dict(chart=...)) for votes/percentages.
 Reel: no zoom (very slow pan), soft typed text with real keystroke sounds, 4.5 s hold, spinning 3D GDK_TV
 globe transition (none at the start), soft low whoosh, original news music bed that changes every run.
 Run render_reel in a background process (it takes ~4-5 min) and keep files on disk (/home/user), not /tmp."""
@@ -11,7 +12,7 @@ FD = FONTS + "Vazirmatn-FD-"
 ARC = FONTS + "archivo-latin-900-normal.woff"
 RED = (230, 57, 70); WHITE = (255, 255, 255); BLACK = (10, 12, 16); GREY = (205, 210, 218)
 W, H = 1080, 1350; S = 2
-UA = {"User-Agent": "gdk-news/1.0 (instagram gdk_tv)"}
+UA = {"User-Agent": "gdk-news/1.1 (https://www.instagram.com/gdk_tv/; news photo fetcher) python-requests/2"}
 
 
 def ensure_fonts():
@@ -117,16 +118,159 @@ def brand_strip(d, R, source):
     d.text((R, base_y), "منبع: " + source, font=F("Regular", 26), fill=GREY, anchor="rs", direction="rtl", language="fa")
 
 
+# ---------------- face-safe framing (user rule 2026-10-28) ----------------
+# A face must never sit under the headline text, the top-left logo or the «فوری» pill.
+# Faces are found with OpenCV YuNet; the crop is chosen so every face stays inside the safe area.
+# If no crop can do it, the photo is shrunk into the free area above the text over a blurred copy of itself.
+_YN = None
+
+
+def _cv2():
+    try:
+        import cv2
+        return cv2
+    except Exception:
+        import subprocess, sys
+        subprocess.run([sys.executable, "-m", "pip", "uninstall", "-y", "-q", "opencv-python"], capture_output=True)
+        subprocess.run([sys.executable, "-m", "pip", "install", "-q", "opencv-python-headless"], capture_output=True)
+        import importlib
+        importlib.invalidate_caches()
+        import cv2
+        return cv2
+
+
+def find_faces(im):
+    """PIL image -> list of head boxes (x0, y0, x1, y1) in image pixels (face box grown to cover hair/chin)."""
+    try:
+        cv2 = _cv2()
+        import numpy as np
+        p = BASE + "/yunet.onnx"
+        if not os.path.exists(p) or os.path.getsize(p) < 100000:
+            u = "https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
+            os.makedirs(BASE, exist_ok=True)
+            open(p, "wb").write(requests.get(u, timeout=60).content)
+        sw, sh = im.size; k = min(1.0, 1280 / max(sw, sh))
+        small = im.convert("RGB").resize((max(1, int(sw * k)), max(1, int(sh * k))))
+        a = cv2.cvtColor(np.array(small), cv2.COLOR_RGB2BGR)
+        det = cv2.FaceDetectorYN.create(p, "", (a.shape[1], a.shape[0]), 0.72, 0.3, 50)
+        _, f = det.detect(a)
+        out = []
+        if f is not None:
+            for r in f:
+                x, y, w, h = [float(v) / k for v in r[:4]]
+                if w * h < (sw * sh) * 0.0006:      # tiny background faces don't matter
+                    continue
+                out.append((x - w * 0.22, y - h * 0.38, x + w * 1.22, y + h * 1.12))
+        return out
+    except Exception as ex:
+        print("face detection skipped:", ex)
+        return []
+
+
+def _overlap(a, b):
+    w = min(a[2], b[2]) - max(a[0], b[0]); h = min(a[3], b[3]) - max(a[1], b[1])
+    return max(0.0, w) * max(0.0, h)
+
+
+def safe_cover(photo, tw, th, focus_y, forbid, pad=24):
+    """Crop/scale `photo` to tw x th so no detected face overlaps any `forbid` box (target pixels)."""
+    im = Image.open(photo).convert("RGB") if isinstance(photo, str) else photo.convert("RGB")
+    sw, sh = im.size
+    faces = find_faces(im)
+    s0 = max(tw / sw, th / sh)
+
+    def plain(s=s0):
+        nw, nh = sw * s, sh * s
+        x0 = (nw - tw) / 2
+        y0 = max(0, min(nh - th, focus_y * nh - th * 0.35))
+        return s, x0, y0
+
+    if not faces:
+        s, x0, y0 = plain()
+    else:
+        fb = [(f[0] - pad, f[1] - pad, f[2] + pad, f[3] + pad) for f in forbid]
+        big = max(faces, key=lambda f: (f[2] - f[0]) * (f[3] - f[1]))
+        best = None
+        for s in (s0, s0 * 1.12, s0 * 1.25):
+            nw, nh = sw * s, sh * s
+            xs = [(nw - tw) * i / 16 for i in range(17)] if nw > tw + 1 else [(nw - tw) / 2]
+            ys = [(nh - th) * i / 30 for i in range(31)] if nh > th + 1 else [(nh - th) / 2]
+            _, px0, py0 = plain(s)
+            for x0 in xs:
+                for y0 in ys:
+                    bad = 0.0; cut = 0.0
+                    for f in faces:
+                        r = (f[0] * s - x0, f[1] * s - y0, f[2] * s - x0, f[3] * s - y0)
+                        area = (r[2] - r[0]) * (r[3] - r[1])
+                        inside = _overlap(r, (0, 0, tw, th))
+                        cut += (area - inside) / area
+                        for z in fb:
+                            bad += _overlap(r, z) / area
+                    rb = (big[0] * s - x0, big[1] * s - y0, big[2] * s - x0, big[3] * s - y0)
+                    lost = 1.0 - _overlap(rb, (0, 0, tw, th)) / ((rb[2] - rb[0]) * (rb[3] - rb[1]))
+                    cost = (bad * 1000 + cut * 120 + lost * 400 + (s / s0 - 1) * 60
+                            + abs(x0 - px0) / tw * 8 + abs(y0 - py0) / th * 8)
+                    if best is None or cost < best[0]:
+                        best = (cost, bad, s, x0, y0)
+        cost, bad, s, x0, y0 = best
+        if bad > 0.001:
+            return _safe_fit(im, tw, th, faces, fb)
+    nw, nh = int(round(sw * s)), int(round(sh * s))
+    big_im = im.resize((nw, nh), Image.LANCZOS)
+    x0 = int(round(max(0, min(nw - tw, x0)))); y0 = int(round(max(0, min(nh - th, y0))))
+    return big_im.crop((x0, y0, x0 + tw, y0 + th))
+
+
+def _safe_fit(im, tw, th, faces, fb):
+    """Fallback: blurred, darkened full-frame copy behind; the photo is scaled down so all faces fall in the free area."""
+    sw, sh = im.size
+    s0 = max(tw / sw, th / sh)
+    bg = im.resize((int(sw * s0) + 1, int(sh * s0) + 1), Image.LANCZOS)
+    bg = bg.crop(((bg.width - tw) // 2, (bg.height - th) // 2, (bg.width - tw) // 2 + tw, (bg.height - th) // 2 + th))
+    bg = Image.blend(bg.filter(ImageFilter.GaussianBlur(36)), Image.new("RGB", (tw, th), (0, 0, 0)), 0.45)
+    fx0 = min(f[0] for f in faces); fy0 = min(f[1] for f in faces)
+    fx1 = max(f[2] for f in faces); fy1 = max(f[3] for f in faces)
+    text_top = min([z[1] for z in fb if z[2] - z[0] > tw * 0.6] or [th])
+    best = None; s = s0; x0 = y0 = 0
+    for i in range(40):
+        s = s0 * (1 - i * 0.02)
+        if s <= 0: break
+        nw, nh = sw * s, sh * s
+        x0 = (tw - nw) / 2 if nw <= tw else max(tw - nw, min(0, tw / 2 - (fx0 + fx1) / 2 * s))
+        y0 = text_top / 2 - (fy0 + fy1) / 2 * s
+        y0 = min(max(y0, th - nh) if nh > th else y0, 0 if nh > th else th - nh)
+        r = [(f[0] * s + x0, f[1] * s + y0, f[2] * s + x0, f[3] * s + y0) for f in faces]
+        if all(sum(_overlap(q, z) for z in fb) == 0 and q[1] >= 0 and q[0] >= 0 and q[2] <= tw for q in r):
+            best = (s, x0, y0); break
+    if best is None:
+        best = (s, x0, y0)
+    s, x0, y0 = best
+    ph = im.resize((max(1, int(sw * s)), max(1, int(sh * s))), Image.LANCZOS)
+    m = Image.new("L", ph.size, 255)
+    fe = max(8, int(min(ph.size) * 0.05))
+    md = ImageDraw.Draw(m)
+    for k in range(fe):
+        md.rectangle([k, k, ph.width - 1 - k, ph.height - 1 - k], outline=int(255 * k / fe))
+    bg.paste(ph, (int(x0), int(y0)), m)
+    return bg
+
+
 def render(photo, out, kicker, runs, source, breaking=False, style="A", focus_y=0.3, sub=None):
     """style A: kicker + red line; B: red vertical bar; C: kicker in red box + underlined red words."""
     ensure_fonts()
-    im = Image.open(photo).convert("RGB")
-    sw, sh = im.size; tr = W / H
-    if sw / sh > tr:
-        nw = int(sh * tr); x0 = (sw - nw) // 2; im = im.crop((x0, 0, x0 + nw, sh))
-    else:
-        nh = int(sw / tr); y0 = int(max(0, min(sh - nh, focus_y * sh - nh * 0.35))); im = im.crop((0, y0, sw, y0 + nh))
-    im = im.resize((W * S, H * S), Image.LANCZOS).convert("RGBA")
+    # layout first (same maths as below) so the photo can be framed with faces clear of the text and logo
+    _b = F("Bold", 64); _e = F("Black", 80); _k = F("Medium", 40); _s = F("Medium", 38)
+    _mw = (W - 120 - (30 if style == "B" else 0)) * S
+    _ln = wrap(runs, _mw, _b, _e); _lh = 24 if style == "C" else 14
+    _hh = sum(max(f.size for _, _, f, _ in ln) * 0.95 + _lh * S for ln in _ln)
+    _kh = _k.size * 1.6 if kicker else 0
+    _sl = wrap([(sub, "n")], _mw, _s, _s) if sub else []
+    _sh = sum(38 * S + 14 * S for _ in _sl) + (30 * S if sub else 0)
+    _top = (H * S - 130 * S - _hh - _kh - 34 * S - _sh) / S
+    forbid = [(0, _top - 40, W, H), (30, 34, 202, 206)]
+    if breaking:
+        forbid.append((800, 70, W - 30, 170))
+    im = safe_cover(photo, W * S, H * S, focus_y, [tuple(v * S for v in z) for z in forbid], pad=20 * S).convert("RGBA")
     g = Image.new("L", (1, H * S))
     for y in range(H * S):
         t = y / (H * S); v = 0
@@ -192,6 +336,8 @@ def _reel_ops(kicker, runs, sub, style, RH, bottom=330):
     subl = wrap([(sub, "n")], maxw, subf, subf) if sub else []
     shh = sum(40 * S + 16 * S for _ in subl) + (30 * S if sub else 0)
     top = RH * S - bottom * S - hh - kh - 34 * S - shh
+    global _REEL_TOP
+    _REEL_TOP = top / S
     right = R - (30 * S if style == "B" else 0)
     ops = []; y = top
     if style == "B":
@@ -271,7 +417,16 @@ class _Scene:
         self.px = pan_px
         horiz = self.pan in ("lr", "rl")
         pw, ph = (W + pan_px, RH) if horiz else (W, RH + pan_px)
-        self.photo = _cover_size(sc["photo"], pw, ph, sc.get("focus_y", 0.3))
+        self.ops = _reel_ops(sc.get("kicker"), sc["runs"], sc.get("sub"), sc.get("style", "A"), RH)
+        T = _REEL_TOP
+        # forbidden zones in photo coordinates, covering every pan offset (faces never under text/logo/pill)
+        if horiz:
+            forbid = [(0, T - 40, pw, ph), (30, 120, 214 + pan_px, 304)]
+            if breaking: forbid.append((800, 150, W - 30 + pan_px, 280))
+        else:
+            forbid = [(0, T - 40, pw, ph), (30, 120, 214, 304 + pan_px)]
+            if breaking: forbid.append((800, 150, W - 30, 280 + pan_px))
+        self.photo = safe_cover(sc["photo"], pw, ph, sc.get("focus_y", 0.3), forbid, pad=20)
         ov = Image.new("RGBA", (W * S, RH * S), (0, 0, 0, 0))
         g = Image.new("L", (1, RH * S))
         for y in range(RH * S):
@@ -292,7 +447,6 @@ class _Scene:
         finally:
             H = old
         self.overlay = _rgba_down(ov, (W, RH))
-        self.ops = _reel_ops(sc.get("kicker"), sc["runs"], sc.get("sub"), sc.get("style", "A"), RH)
         self.total = sum(len(o[3]) for o in self.ops if o[0] == "w")
         self._layers = {}
 
@@ -330,6 +484,7 @@ class _Scene:
         return im.convert("RGB")
 
 
+_REEL_TOP = 1200
 _GLOBE_TEX = None
 
 
@@ -649,11 +804,173 @@ def _soundtrack(total_s, clicks, whooshes, sting, music=0.13, music_seed=0):
     return (st * 32767).astype(np.int16)
 
 
+# ---------------- data motion-graphic scene (user rule 2026-10-28) ----------------
+# For news with votes / seats / percentages / tables, put one chart scene in the reel:
+#   dict(chart=dict(kind="seats", total=120, majority=61, items=[(label, value, "red"|"white"|"grey"|"blue"|"gold"|"green"), ...],
+#                   note="با شمارش ۸۴٫۵ درصد آرا"), kicker=..., runs=[...], style="A")
+#   kind="seats": animated hemicycle of seats + counting bars with the majority line.
+#   kind="bars":  animated horizontal bars; values are percentages (suffix ٪) unless unit="" is given.
+_CHART_COL = {"red": RED, "white": (240, 242, 246), "grey": (138, 146, 158), "blue": (88, 150, 230),
+              "gold": (236, 182, 64), "green": (70, 186, 120)}
+
+
+def fa_num(v):
+    s = ("%g" % v) if isinstance(v, float) else str(v)
+    return s.translate(str.maketrans("0123456789.", "۰۱۲۳۴۵۶۷۸۹٫"))
+
+
+def _hemicycle(total, rows=6, r0=205, r1=445):
+    import math
+    radii = [r0 + (r1 - r0) * i / (rows - 1) for i in range(rows)]
+    tot_r = sum(radii)
+    n = [max(1, round(total * r / tot_r)) for r in radii]
+    while sum(n) > total: n[n.index(max(n))] -= 1
+    while sum(n) < total: n[-1] += 1
+    seats = []
+    for r, k in zip(radii, n):
+        for j in range(k):
+            seats.append((math.pi * (1 - (j + 0.5) / k), r))
+    seats.sort(key=lambda s: (-s[0], s[1]))
+    return seats
+
+
+class _ChartScene:
+    def __init__(self, sc, source, breaking, RH, duration):
+        self.RH = RH; self.dur = duration
+        self.c = sc["chart"]; self.kind = self.c.get("kind", "seats")
+        bg = Image.new("RGB", (W, RH), BLACK)
+        d0 = ImageDraw.Draw(bg)
+        for y in range(RH):
+            v = int(10 + 14 * (y / RH))
+            d0.line([(0, y), (W, y)], fill=(v, v + 2, v + 6))
+        glow = Image.new("L", (W, RH), 0); gd = ImageDraw.Draw(glow)
+        gd.ellipse([W * 0.15, RH * 0.33, W * 0.85, RH * 0.66], fill=110)
+        glow = glow.filter(ImageFilter.GaussianBlur(160))
+        bg = Image.composite(Image.new("RGB", (W, RH), (92, 14, 22)), bg, glow)
+        d0 = ImageDraw.Draw(bg)
+        for x in range(0, W, 60):
+            d0.line([(x, 0), (x, RH)], fill=(30, 33, 40))
+        for y in range(0, RH, 60):
+            d0.line([(0, y), (W, y)], fill=(30, 33, 40))
+        self.bg = bg.convert("RGBA")
+        ov = Image.new("RGBA", (W * S, RH * S), (0, 0, 0, 0))
+        d = ImageDraw.Draw(ov)
+        M = 60 * S; R = W * S - M; top = 150 * S
+        logo(d, M + 62 * S, top + 62 * S, 62 * S)
+        if breaking:
+            pill(d, R, top + 26 * S, "فوری", F("Black", 38), 26 * S, 76 * S, dot=True)
+        global H
+        old = H; H = RH
+        try:
+            brand_strip(d, R, source)
+        finally:
+            H = old
+        self.overlay = _rgba_down(ov, (W, RH))
+        self.ops = _reel_ops(sc.get("kicker"), sc["runs"], sc.get("sub"), sc.get("style", "A"), RH)
+        self.shift = int((330 - _REEL_TOP) * S)
+        self.total = sum(len(o[3]) for o in self.ops if o[0] == "w")
+        self._layers = {}
+        self.items = [(lab, val, _CHART_COL.get(col, col) if isinstance(col, str) else col) for lab, val, col in self.c["items"]]
+        if self.kind == "seats":
+            self.seats = _hemicycle(self.c.get("total", 120))
+            cols = []
+            for lab, val, col in self.items:
+                cols += [col] * int(val)
+            self.seat_cols = cols
+        self.t_bars = None
+
+    def layer(self, n):
+        if n not in self._layers:
+            if len(self._layers) > 3:
+                for key in sorted(self._layers)[:-2]:
+                    del self._layers[key]
+            im = Image.new("RGBA", (W * S, self.RH * S), (0, 0, 0, 0))
+            _draw_ops(ImageDraw.Draw(im), self.ops, n)
+            sh = Image.new("RGBA", im.size, (0, 0, 0, 0)); sh.paste(im, (0, self.shift))
+            self._layers[n] = _rgba_down(sh, (W, self.RH))
+        return self._layers[n]
+
+    def _graphic(self, p):
+        import math
+        def ease(u):
+            u = max(0.0, min(1.0, u)); return 1 - (1 - u) ** 3
+        im = Image.new("RGBA", (W * S, self.RH * S), (0, 0, 0, 0))
+        d = ImageDraw.Draw(im)
+        maj = self.c.get("majority"); total = self.c.get("total", 120)
+        if self.kind == "seats":
+            cx, cy = W / 2 * S, 1230 * S
+            n_show = ease(p / 0.62) * len(self.seat_cols)
+            dr = 17 * S
+            for i, (a, r) in enumerate(self.seats):
+                x = cx + math.cos(a) * r * S; y = cy - math.sin(a) * r * S
+                if i < len(self.seat_cols) and i < n_show:
+                    k = min(1.0, n_show - i); rr = dr * (0.4 + 0.6 * k)
+                    d.ellipse([x - rr, y - rr, x + rr, y + rr], fill=self.seat_cols[i])
+                else:
+                    d.ellipse([x - dr, y - dr, x + dr, y + dr], outline=(70, 76, 88), width=2 * S)
+            if maj:
+                a_ = ease((p - 0.55) / 0.2)
+                if a_ > 0:
+                    y0 = cy - 470 * S; y1 = cy - 180 * S
+                    for yy in range(int(y0), int(y1), 22 * S):
+                        d.rectangle([cx - 2 * S, yy, cx + 2 * S, min(yy + 12 * S, y1)], fill=(255, 255, 255, int(220 * a_)))
+                    t = "اکثریت: " + fa_num(maj) + " کرسی"
+                    text(d, (cx + F("Bold", 34).getlength(t) / 2, y0 - 16 * S), t, F("Bold", 34), (255, 255, 255, int(255 * a_)))
+            y_bar0 = 1300
+        else:
+            y_bar0 = 820
+        rowh = 108 if self.kind == "seats" else 170
+        x_r = (W - 70) * S; x_l = 70 * S; lab_w = 300 * S
+        bar_r = x_r - lab_w; bar_l = x_l + 120 * S
+        unit = self.c.get("unit", "٪" if self.kind == "bars" else "")
+        vmax = total if self.kind == "seats" else max(self.c.get("max", 0), max(v for _, v, _ in self.items))
+        for j, (lab, val, col) in enumerate(self.items):
+            u = ease((p - 0.15 - j * 0.1) / 0.45)
+            y = (y_bar0 + j * rowh) * S
+            bh = (34 if self.kind == "seats" else 54) * S
+            text(d, (x_r, y + bh * 0.82), lab, F("Bold", 40 if self.kind == "seats" else 50), WHITE)
+            d.rounded_rectangle([bar_l, y, bar_r, y + bh], radius=bh / 2, fill=(42, 46, 56))
+            wv = (bar_r - bar_l) * (val / vmax) * u
+            if wv > bh:
+                d.rounded_rectangle([bar_r - wv, y, bar_r, y + bh], radius=bh / 2, fill=col)
+            num = fa_num(round(val * u, 1) if isinstance(val, float) else int(round(val * u))) + unit
+            nf = F("Black", 52 if self.kind == "seats" else 64)
+            text(d, (bar_l - 18 * S, y + bh * 0.95), num, nf, col)
+            if maj and self.kind == "seats":
+                mx = bar_r - (bar_r - bar_l) * (maj / vmax)
+                d.rectangle([mx - 2 * S, y - 8 * S, mx + 2 * S, y + bh + 8 * S], fill=(255, 255, 255, 200))
+        note = self.c.get("note")
+        if note:
+            a_ = ease((p - 0.6) / 0.25)
+            if a_ > 0:
+                y = (y_bar0 + len(self.items) * rowh + 34) * S
+                f = F("Medium", 36)
+                text(d, (W * S / 2 + f.getlength(note) / 2, y), note, f, (205, 210, 218, int(255 * a_)))
+        return _rgba_down(im, (W, self.RH))
+
+    def frame(self, t, chars):
+        im = self.bg.copy()
+        im.alpha_composite(self.overlay)
+        if chars > 0:
+            k = int(chars); fr = chars - k
+            lay = self.layer(min(k, self.total))
+            if fr > 0.02 and k < self.total:
+                lay = Image.blend(lay, self.layer(k + 1), fr)
+            im.alpha_composite(lay)
+        if self.t_bars is not None and t >= self.t_bars:
+            p = min(1.0, (t - self.t_bars) / 3.2)
+            key = round(p, 2)
+            if getattr(self, "_gk", None) != key:
+                self._gk = key; self._gi = self._graphic(p)
+            im.alpha_composite(self._gi)
+        return im.convert("RGB")
+
+
 def render_reel(scenes, source, out, breaking=False, hold=4.5, cps=15, sting=1.6, fps=30, music_seed=None):
     import subprocess, shutil, wave, numpy as np
     ensure_fonts()
     RH = 1920
-    photos = [sc["photo"] for sc in scenes]
+    photos = [sc["photo"] for sc in scenes if not sc.get("chart")]
     if len(set(photos)) != len(photos):
         raise ValueError("every scene needs a different photo")
     ff = _ffmpeg()
@@ -674,9 +991,15 @@ def render_reel(scenes, source, out, breaking=False, hold=4.5, cps=15, sting=1.6
     import gc
     for i, sc in enumerate(scenes):
         sc = dict(sc); sc.setdefault("pan", pans[i % 4])
-        o = _Scene(sc, source, breaking and i == 0, RH, 1.0)
+        if sc.get("chart"):
+            o = _ChartScene(sc, source, breaking and i == 0, RH, 1.0)
+        else:
+            o = _Scene(sc, source, breaking and i == 0, RH, 1.0)
         o.type_s = o.total / cps
-        o.dur = half / fps + 0.25 + o.type_s + hold + half / fps
+        sc_hold = hold + (1.5 if sc.get("chart") else 0)      # the chart animates ~3 s, then is read
+        o.dur = half / fps + 0.25 + o.type_s + sc_hold + half / fps
+        if sc.get("chart"):
+            o.t_bars = (half / fps if i else 0) + 0.25 + o.type_s * 0.6
         t_scene0 = fno / fps
         if i == 0:
             k_from = ns
@@ -698,7 +1021,7 @@ def render_reel(scenes, source, out, breaking=False, hold=4.5, cps=15, sting=1.6
                     clicks.append(t_type + (c / o.total) * o.type_s)
                 last = int(chars)
             emit(o.frame(fno / fps - t_scene0, min(chars, o.total)))
-        for _ in range(int(hold * fps)):
+        for _ in range(int(sc_hold * fps)):
             emit(o.frame(fno / fps - t_scene0, o.total))
         if i + 1 < len(scenes):
             for k in range(0, half):
@@ -734,7 +1057,24 @@ def commons_photo(title, out):
         "action": "query", "titles": title, "prop": "imageinfo", "iiprop": "url|extmetadata",
         "iiurlwidth": 1920, "format": "json"}, headers=UA, timeout=30).json()
     ii = list(r["query"]["pages"].values())[0]["imageinfo"][0]; m = ii["extmetadata"]
-    open(out, "wb").write(requests.get(ii.get("thumburl") or ii["url"], headers=UA, timeout=60).content)
+    import time as _t
+    data = None
+    for u in [ii.get("thumburl"), ii["url"], ii.get("thumburl"), ii["url"]]:
+        if not u:
+            continue
+        rr = requests.get(u, headers=UA, timeout=90)
+        if rr.ok and rr.headers.get("content-type", "").startswith("image/"):
+            data = rr.content; break
+        _t.sleep(3)
+    if data is None:
+        raise RuntimeError("Commons download failed: " + title)
+    open(out, "wb").write(data)
+    try:
+        _im = Image.open(out); _im.load()
+        if max(_im.size) > 2400:
+            _im.thumbnail((2400, 2400), Image.LANCZOS); _im.convert("RGB").save(out, quality=94)
+    except Exception:
+        raise RuntimeError("Commons file is not a readable image: " + title)
     lic = m.get("LicenseShortName", {}).get("value", "")
     artist = re.sub("<[^>]+>", "", m.get("Artist", {}).get("value", ""))
     return out, lic, artist
