@@ -222,37 +222,37 @@ def safe_cover(photo, tw, th, focus_y, forbid, pad=24):
 
 
 def _safe_fit(im, tw, th, faces, fb):
-    """Fallback: blurred, darkened full-frame copy behind; the photo is scaled down so all faces fall in the free area."""
+    """Fallback when no crop keeps faces clear: a darkened blurred copy fills the frame, and the whole photo is placed
+    as a framed inset in the free band between the logo row and the text block."""
     sw, sh = im.size
     s0 = max(tw / sw, th / sh)
     bg = im.resize((int(sw * s0) + 1, int(sh * s0) + 1), Image.LANCZOS)
     bg = bg.crop(((bg.width - tw) // 2, (bg.height - th) // 2, (bg.width - tw) // 2 + tw, (bg.height - th) // 2 + th))
-    bg = Image.blend(bg.filter(ImageFilter.GaussianBlur(36)), Image.new("RGB", (tw, th), (0, 0, 0)), 0.45)
-    fx0 = min(f[0] for f in faces); fy0 = min(f[1] for f in faces)
-    fx1 = max(f[2] for f in faces); fy1 = max(f[3] for f in faces)
+    bg = Image.blend(bg.filter(ImageFilter.GaussianBlur(40)), Image.new("RGB", (tw, th), (0, 0, 0)), 0.62)
+    k = max(1.0, tw / 1080)
     text_top = min([z[1] for z in fb if z[2] - z[0] > tw * 0.6] or [th])
-    best = None; s = s0; x0 = y0 = 0
-    for i in range(40):
-        s = s0 * (1 - i * 0.02)
-        if s <= 0: break
-        nw, nh = sw * s, sh * s
-        x0 = (tw - nw) / 2 if nw <= tw else max(tw - nw, min(0, tw / 2 - (fx0 + fx1) / 2 * s))
-        y0 = text_top / 2 - (fy0 + fy1) / 2 * s
-        y0 = min(max(y0, th - nh) if nh > th else y0, 0 if nh > th else th - nh)
-        r = [(f[0] * s + x0, f[1] * s + y0, f[2] * s + x0, f[3] * s + y0) for f in faces]
-        if all(sum(_overlap(q, z) for z in fb) == 0 and q[1] >= 0 and q[0] >= 0 and q[2] <= tw for q in r):
-            best = (s, x0, y0); break
-    if best is None:
-        best = (s, x0, y0)
-    s, x0, y0 = best
+    top_m = max([z[3] for z in fb if z[2] - z[0] <= tw * 0.6 and z[1] < th * 0.3] or [0]) + 24 * k
+    band_h = max(200 * k, text_top - 30 * k - top_m)
+    band_w = tw - 2 * 52 * k
+    s = min(band_w / sw, band_h / sh)
     ph = im.resize((max(1, int(sw * s)), max(1, int(sh * s))), Image.LANCZOS)
-    m = Image.new("L", ph.size, 255)
-    fe = max(8, int(min(ph.size) * 0.05))
-    md = ImageDraw.Draw(m)
-    for k in range(fe):
-        md.rectangle([k, k, ph.width - 1 - k, ph.height - 1 - k], outline=int(255 * k / fe))
-    bg.paste(ph, (int(x0), int(y0)), m)
-    return bg
+    x0 = (tw - ph.width) / 2
+    y0 = top_m + (band_h - ph.height) / 2
+    rad = int(22 * k); blk = int(12 * k); red = int(5 * k); gap = int(4 * k)
+    out = bg.convert("RGBA")
+    X0, Y0 = int(x0), int(y0); X1, Y1 = X0 + ph.width, Y0 + ph.height
+    sh_ = Image.new("L", (tw, th), 0)
+    ImageDraw.Draw(sh_).rounded_rectangle([X0 - blk + 10 * k, Y0 - blk + 18 * k, X1 + blk + 10 * k, Y1 + blk + 18 * k], radius=rad + blk, fill=170)
+    sh_ = sh_.filter(ImageFilter.GaussianBlur(26 * k))
+    out = Image.composite(Image.new("RGBA", (tw, th), (0, 0, 0, 255)), out, sh_)
+    d = ImageDraw.Draw(out)
+    d.rounded_rectangle([X0 - blk - red - gap, Y0 - blk - red - gap, X1 + blk + red + gap, Y1 + blk + red + gap], radius=rad + blk + red + gap, fill=RED)
+    d.rounded_rectangle([X0 - blk - gap, Y0 - blk - gap, X1 + blk + gap, Y1 + blk + gap], radius=rad + blk + gap, fill=BLACK)
+    d.rounded_rectangle([X0 - gap, Y0 - gap, X1 + gap, Y1 + gap], radius=rad + gap, fill=RED)
+    m = Image.new("L", ph.size, 0)
+    ImageDraw.Draw(m).rounded_rectangle([0, 0, ph.width - 1, ph.height - 1], radius=rad, fill=255)
+    out.paste(ph, (X0, Y0), m)
+    return out.convert("RGB")
 
 
 def render(photo, out, kicker, runs, source, breaking=False, style="A", focus_y=0.3, sub=None):
